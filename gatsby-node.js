@@ -1,5 +1,6 @@
 const path = require(`path`)
 const { createFilePath } = require(`gatsby-source-filesystem`)
+const { fluid } = require(`gatsby-plugin-sharp`)
 
 exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
@@ -61,4 +62,31 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       value,
     })
   }
+}
+
+exports.createResolvers = ({ createResolvers, reporter, cache, }) => {
+  createResolvers({
+    MarkdownRemark: {
+      previewImage: {
+        type: `JSON`,
+        args: {
+          maxWidth: `Int`,
+          maxHeight: `Int`,
+        },
+        resolve(remark, args, context) {
+          const file = context.nodeModel.getAllNodes({ type: `File` })
+              .find(file => file.extension === 'png')
+          if (!file) {
+            return null
+          }
+          const duotone = {
+            highlight: remark.frontmatter.color,
+            shadow: "#222222",
+            ...args.duotone,
+          }
+          return fluid({ file, args: { ...args, duotone }, reporter, cache })
+        }
+      }
+    }
+  })
 }

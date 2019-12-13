@@ -1,5 +1,6 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
+import Image from "gatsby-image"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -33,6 +34,7 @@ class BlogIndex extends React.Component {
                 <small>{node.frontmatter.date}</small>
               </header>
               <section>
+                <Image fluid={node.previewImage} style={{ maxWidth: '100px' }} />
                 <p
                   dangerouslySetInnerHTML={{
                     __html: node.frontmatter.description || node.excerpt,
@@ -68,6 +70,7 @@ export const pageQuery = graphql`
             title
             description
           }
+          previewImage(maxWidth: 100)
         }
       }
     }
